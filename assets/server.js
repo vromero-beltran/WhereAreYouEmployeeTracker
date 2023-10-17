@@ -7,7 +7,7 @@ const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'root',
-    database: 'employees_db'
+    database: 'cooljob_db'
 });
 
 // Start application with main prompt
@@ -31,7 +31,6 @@ const startApp = () => {
         case 'View All Departments':
             viewAllDepartments();
             break;
-        // Add cases for other choices
         case 'View All Roles' :
             viewAllRoles();
             break;
@@ -59,7 +58,7 @@ const viewAllDepartments = () => {
     db.query('SELECT id, name FROM department', (err, results) => {
         if (err) {
             console.log(err);
-            return;
+            startApp();
         }
         console.table(results);
         startApp();
@@ -70,7 +69,7 @@ const viewAllRoles = () => {
     db.query(`SELECT role.id, role.title, role.salary, department.name AS department FROM role LEFT JOIN department ON role.department_id = department.id`, (err, results) => {
         if (err) {
             console.log(err);
-            return;
+            startApp();
         }
         console.table(results); 
         startApp();
@@ -78,10 +77,14 @@ const viewAllRoles = () => {
 }
 
 const viewAllEmployees = () => {
-    db.query(`SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(employee.first_name, ' ', employee.last_name) AS manager FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee ON employee.id = employee.manager_id`, (err, results) => {
+    db.query(`SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department, r.salary, CONCAT(e.first_name, ' ', e.last_name) AS manager 
+    FROM employee e
+    LEFT JOIN role r ON e.role_id = r.id
+    LEFT JOIN department d ON r.department_id = d.id
+    LEFT JOIN employee m ON m.id = e.manager_id`, (err, results) => {
         if (err) {
             console.log(err);
-            return;
+            startApp();
         }
         console.table(results);
         startApp();
@@ -100,7 +103,7 @@ const addDepartment = () => {
         db.query(sql, answer.deptName, (err, result) => {
             if (err) {
                 console.log(err);
-                return;
+                startApp();
             }
             console.log(`Added ${answer.deptName} to departments!`);
             startApp();
@@ -128,7 +131,7 @@ const addRole = () => {
         db.query(sql, [answer.roleTitle, answer.roleSalary, answer.roleDept], (err, result) => {
             if (err) {
                 console.log(err);
-                return;
+                startApp();
             }
             console.log(`Added ${answer.roleTitle} to roles!`);
             startApp();
@@ -160,7 +163,7 @@ const addEmployee = () => {
         db.query(sql, [answer.employeeFirstName, answer.employeeLastName, answer.employeeRole, answer.employeeManager], (err, result) => {
             if (err) {
                 console.log(err);
-                return;
+                startApp();
             }
             console.log(`Added ${answer.employeeFirstName} ${answer.employeeLastName} to employees!`);
             startApp();
@@ -184,7 +187,7 @@ const updateEmployeeRole = () => {
         db.query(sql, [answer.employeeRole, answer.employeeId], (err, result) => {
             if (err) {
                 console.log(err);
-                return;
+                startApp();
             }
             console.log(`Updated employee role!`);
             startApp();
