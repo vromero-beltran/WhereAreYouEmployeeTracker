@@ -160,10 +160,10 @@ const addEmployee = () => {
     ])
     .then(answer => {
         const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)`;
-        db.query(sql, [answer.employeeFirstName, answer.employeeLastName, answer.employeeRole, answer.employeeManager], (err, result) => {
+        db.promise().query(sql, [answer.employeeFirstName, answer.employeeLastName, answer.employeeRole, answer.employeeManager], (err, result) => {
             if (err) {
                 console.log(err);
-                startApp();
+                return;
             }
             console.log(`Added ${answer.employeeFirstName} ${answer.employeeLastName} to employees!`);
             startApp();
